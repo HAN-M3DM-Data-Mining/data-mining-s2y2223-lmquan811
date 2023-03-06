@@ -1,38 +1,75 @@
 ---
-title: "Assigment - kNN DIY"
+  title: "Assigment - Naive Bayes DIY"
 author:
-  - name author here - Author
-  - name reviewer here - Reviewer
+- Le Minh Quan - Author
+- name reviewer here - Reviewer
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-   html_notebook:
-    toc: true
-    toc_depth: 2
+  html_notebook:
+  toc: true
+toc_depth: 2
 ---
-
-
-```{r}
+  
+  ```{r}
 library(tidyverse)
-library(googlesheets4)
-library(class)
+library(tm)
 library(caret)
+library(wordcloud)
+library(e1071)
 ```
 
-Choose a suitable dataset from [this](https://github.com/HAN-M3DM-Data-Mining/assignments/tree/master/datasets) folder and train  your own kNN model. Follow all the steps from the CRISP-DM model.
 
 ## Business Understanding
-text and code here
+This KNN model is launched to detect the possibility of getting diabetes among a specific amount of people to preventing it 
 
 ## Data Understanding
-text and code here
+url <- "https://raw.githubusercontent.com/HAN-M3DM-Data-Mining/data-mining-s2y2223-lmquan811/master/datasets/KNN-diabetes.csv?token=GHSAT0AAAAAAB6DEE6L5UG6ULBZVOGTYY3OZAFCVSA"
+rawDF <- read_csv(url)    
+
+str(rawDF)
 
 ## Data Preparation
-text and code here
+cleanDF <- rawDF
+head(cleanDF)
+
+cntOutc <- table(cleanDF$Outcome)
+propOutc <- round(prop.table(cntOutc) * 100 , digits = 1)
+
+cntOutc
+propOutc
+
+
+cleanDF$Outcome <- factor(cleanDF$Outcome, levels = c("0", "1"), labels = c("No Diabetes", "Diabetes")) %>% relevel("Diabetes") 
+head(cleanDF, 10)
+
+summary(cleanDF[c("Glucose", "Pregnancies", "BMI", "BloodPressure", "DiabetesPedigreeFunction")])
+
+normalize <- function(x) { # Function takes in a vector
+  return ((x - min(x)) / (max(x) - min(x))) # distance of item value - minimum vector value divided by the range of all vector values
+}
+
+
+cleanDF_n <- sapply(1:8,
+                    function(x) {
+  normalize(cleanDF[,x])
+}) %>% as.data.frame()
+colnames(cleanDF_n) <- colnames(cleanDF)[1:8]
+
+summary(cleanDF_n[c("Glucose", "Pregnancies", "BMI", "BloodPressure", "DiabetesPedigreeFunction")])
+
+trainDF_feat <- cleanDF_n[1:668,  ]
+testDF_feat <- cleanDF_n[669:768,  ]
+
+trainDF_labels <- cleanDF[1:668,  1]
+testDF_labels <- cleanDF[669:768,  1]
 
 ## Modeling
-text and code here
+cleanDF_test_pred <- knn(train = as.matrix(trainDF_feat), test = as.matrix(testDF_feat), cl = as.matrix(trainDF_labels), k=50)
+head(cleanDF_test_pred)
+
+confusionMatrix(cleanDF_test_pred, testDF_labels[[1]], positive = NULL, dnn = c("Prediction", "True"))
 
 ## Evaluation and Deployment
-text and code here
+
 
 reviewer adds suggestions for improving the model
