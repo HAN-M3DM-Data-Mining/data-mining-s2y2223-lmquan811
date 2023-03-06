@@ -1,5 +1,5 @@
 ---
-  title: "Assigment - Naive Bayes DIY"
+title: "Assigment - Naive Bayes DIY"
 author:
 - Le Minh Quan - Author
 - name reviewer here - Reviewer
@@ -7,7 +7,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_notebook:
   toc: true
-toc_depth: 2
+  toc_depth: 2
 ---
   
   ```{r}
@@ -38,7 +38,7 @@ propOutc <- round(prop.table(cntOutc) * 100 , digits = 1)
 cntOutc
 propOutc
 
-
+mgjh
 cleanDF$Outcome <- factor(cleanDF$Outcome, levels = c("0", "1"), labels = c("No Diabetes", "Diabetes")) %>% relevel("Diabetes") 
 head(cleanDF, 10)
 

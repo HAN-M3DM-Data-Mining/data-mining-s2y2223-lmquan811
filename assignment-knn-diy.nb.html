@@ -9,11 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="name author here - Author" />
+<meta name="author" content="Le Minh Quan - Author" />
 <meta name="author" content="name reviewer here - Reviewer" />
 
 
-<title>Assigment - kNN DIY</title>
+<title>Assigment - Naive Bayes DIY</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1684,23 +1684,17 @@ overflow-y: auto;
 border: 1px solid #ddd;
 border-radius: 4px;
 }
-.tabset-dropdown > .nav-tabs > li.active:before {
-content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+content: "\e259";
 font-family: 'Glyphicons Halflings';
 display: inline-block;
 padding: 10px;
 border-right: 1px solid #ddd;
 }
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-content: "";
-border: none;
-}
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-content: "";
+content: "\e258";
 font-family: 'Glyphicons Halflings';
-display: inline-block;
-padding: 10px;
-border-right: 1px solid #ddd;
+border: none;
 }
 .tabset-dropdown > .nav-tabs > li.active {
 display: block;
@@ -1754,63 +1748,73 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Assigment - kNN DIY</h1>
-<h4 class="author">name author here - Author</h4>
+<h1 class="title toc-ignore">Assigment - Naive Bayes DIY</h1>
+<h4 class="author">Le Minh Quan - Author</h4>
 <h4 class="author">name reviewer here - Reviewer</h4>
-<h4 class="date">10 January, 2023</h4>
+<h4 class="date">06 March, 2023</h4>
 
 </div>
 
-<div id="TOC">
-<ul>
-<li><a href="#business-understanding" id="toc-business-understanding">Business Understanding</a></li>
-<li><a href="#data-understanding" id="toc-data-understanding">Data
-Understanding</a></li>
-<li><a href="#data-preparation" id="toc-data-preparation">Data
-Preparation</a></li>
-<li><a href="#modeling" id="toc-modeling">Modeling</a></li>
-<li><a href="#evaluation-and-deployment" id="toc-evaluation-and-deployment">Evaluation and Deployment</a></li>
-</ul>
-</div>
 
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KGdvb2dsZXNoZWV0czQpXG5saWJyYXJ5KGNsYXNzKVxubGlicmFyeShjYXJldClcbmBgYCJ9 -->
 <pre class="r"><code>library(tidyverse)
-library(googlesheets4)
-library(class)
-library(caret)</code></pre>
-<!-- rnb-source-end -->
+library(tm)
+library(caret)
+library(wordcloud)
+library(e1071)</code></pre>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Choose a suitable dataset from <a href="https://github.com/HAN-M3DM-Data-Mining/assignments/tree/master/datasets">this</a>
-folder and train your own kNN model. Follow all the steps from the
-CRISP-DM model.</p>
 <div id="business-understanding" class="section level2">
 <h2>Business Understanding</h2>
-<p>text and code here</p>
+<p>This KNN model is launched to detect the possibility of getting
+diabetes among a specific amount of people to preventing it</p>
 </div>
 <div id="data-understanding" class="section level2">
 <h2>Data Understanding</h2>
-<p>text and code here</p>
+<p>Accessing to the data rawDF &lt;-
+read_csv(“data-mining-s2y2223-lmquan811/datasets/KNN-diabetes.csv”)</p>
+<p>str(rawDF)</p>
 </div>
 <div id="data-preparation" class="section level2">
 <h2>Data Preparation</h2>
-<p>text and code here</p>
+<p>cleanDF &lt;- rawDF head(cleanDF)</p>
+<p>cntOutc &lt;- table(cleanDF$Outcome) propOutc &lt;-
+round(prop.table(cntOutc) * 100 , digits = 1)</p>
+<p>cntOutc propOutc</p>
+<p>mgjh cleanDF<span class="math inline">\(Outcome &lt;-
+factor(cleanDF\)</span>Outcome, levels = c(“0”, “1”), labels = c(“No
+Diabetes”, “Diabetes”)) %&gt;% relevel(“Diabetes”) head(cleanDF, 10)</p>
+<p>summary(cleanDF[c(“Glucose”, “Pregnancies”, “BMI”, “BloodPressure”,
+“DiabetesPedigreeFunction”)])</p>
+<p>normalize &lt;- function(x) { return ((x - min(x)) / (max(x) -
+min(x))) }</p>
+<p>cleanDF_n &lt;- sapply(1:8, function(x) { normalize(cleanDF[,x]) })
+%&gt;% as.data.frame() colnames(cleanDF_n) &lt;-
+colnames(cleanDF)[1:8]</p>
+<p>summary(cleanDF_n[c(“Glucose”, “Pregnancies”, “BMI”, “BloodPressure”,
+“DiabetesPedigreeFunction”)])</p>
+<p>trainDF_feat &lt;- cleanDF_n[1:668, ] testDF_feat &lt;-
+cleanDF_n[669:768, ]</p>
+<p>trainDF_labels &lt;- cleanDF[1:668, 1] testDF_labels &lt;-
+cleanDF[669:768, 1]</p>
 </div>
 <div id="modeling" class="section level2">
 <h2>Modeling</h2>
-<p>text and code here</p>
+<p>cleanDF_test_pred &lt;- knn(train = as.matrix(trainDF_feat), test =
+as.matrix(testDF_feat), cl = as.matrix(trainDF_labels), k=50)
+head(cleanDF_test_pred)</p>
+<p>confusionMatrix(cleanDF_test_pred, testDF_labels[[1]], positive =
+NULL, dnn = c(“Prediction”, “True”))</p>
 </div>
 <div id="evaluation-and-deployment" class="section level2">
 <h2>Evaluation and Deployment</h2>
-<p>text and code here</p>
 <p>reviewer adds suggestions for improving the model</p>
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiQXNzaWdtZW50IC0ga05OIERJWSIKYXV0aG9yOgogIC0gbmFtZSBhdXRob3IgaGVyZSAtIEF1dGhvcgogIC0gbmFtZSByZXZpZXdlciBoZXJlIC0gUmV2aWV3ZXIKZGF0ZTogImByIGZvcm1hdChTeXMudGltZSgpLCAnJWQgJUIsICVZJylgIgpvdXRwdXQ6CiAgIGh0bWxfbm90ZWJvb2s6CiAgICB0b2M6IHRydWUKICAgIHRvY19kZXB0aDogMgotLS0KCgpgYGB7cn0KbGlicmFyeSh0aWR5dmVyc2UpCmxpYnJhcnkoZ29vZ2xlc2hlZXRzNCkKbGlicmFyeShjbGFzcykKbGlicmFyeShjYXJldCkKYGBgCgpDaG9vc2UgYSBzdWl0YWJsZSBkYXRhc2V0IGZyb20gW3RoaXNdKGh0dHBzOi8vZ2l0aHViLmNvbS9IQU4tTTNETS1EYXRhLU1pbmluZy9hc3NpZ25tZW50cy90cmVlL21hc3Rlci9kYXRhc2V0cykgZm9sZGVyIGFuZCB0cmFpbiAgeW91ciBvd24ga05OIG1vZGVsLiBGb2xsb3cgYWxsIHRoZSBzdGVwcyBmcm9tIHRoZSBDUklTUC1ETSBtb2RlbC4KCiMjIEJ1c2luZXNzIFVuZGVyc3RhbmRpbmcKdGV4dCBhbmQgY29kZSBoZXJlCgojIyBEYXRhIFVuZGVyc3RhbmRpbmcKdGV4dCBhbmQgY29kZSBoZXJlCgojIyBEYXRhIFByZXBhcmF0aW9uCnRleHQgYW5kIGNvZGUgaGVyZQoKIyMgTW9kZWxpbmcKdGV4dCBhbmQgY29kZSBoZXJlCgojIyBFdmFsdWF0aW9uIGFuZCBEZXBsb3ltZW50CnRleHQgYW5kIGNvZGUgaGVyZQoKcmV2aWV3ZXIgYWRkcyBzdWdnZXN0aW9ucyBmb3IgaW1wcm92aW5nIHRoZSBtb2RlbA==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkFzc2lnbWVudCAtIE5haXZlIEJheWVzIERJWSINCmF1dGhvcjoNCi0gTGUgTWluaCBRdWFuIC0gQXV0aG9yDQotIG5hbWUgcmV2aWV3ZXIgaGVyZSAtIFJldmlld2VyDQpkYXRlOiAiYHIgZm9ybWF0KFN5cy50aW1lKCksICclZCAlQiwgJVknKWAiDQpvdXRwdXQ6DQogIGh0bWxfbm90ZWJvb2s6DQogIHRvYzogdHJ1ZQ0KICB0b2NfZGVwdGg6IDINCi0tLQ0KICANCiAgYGBge3J9DQpsaWJyYXJ5KHRpZHl2ZXJzZSkNCmxpYnJhcnkodG0pDQpsaWJyYXJ5KGNhcmV0KQ0KbGlicmFyeSh3b3JkY2xvdWQpDQpsaWJyYXJ5KGUxMDcxKQ0KYGBgDQoNCg0KIyMgQnVzaW5lc3MgVW5kZXJzdGFuZGluZw0KVGhpcyBLTk4gbW9kZWwgaXMgbGF1bmNoZWQgdG8gZGV0ZWN0IHRoZSBwb3NzaWJpbGl0eSBvZiBnZXR0aW5nIGRpYWJldGVzIGFtb25nIGEgc3BlY2lmaWMgYW1vdW50IG9mIHBlb3BsZSB0byBwcmV2ZW50aW5nIGl0IA0KDQojIyBEYXRhIFVuZGVyc3RhbmRpbmcNCiAgQWNjZXNzaW5nIHRvIHRoZSBkYXRhIA0KcmF3REYgPC0gcmVhZF9jc3YoImRhdGEtbWluaW5nLXMyeTIyMjMtbG1xdWFuODExL2RhdGFzZXRzL0tOTi1kaWFiZXRlcy5jc3YiKSAgICANCg0Kc3RyKHJhd0RGKQ0KDQojIyBEYXRhIFByZXBhcmF0aW9uDQpjbGVhbkRGIDwtIHJhd0RGDQpoZWFkKGNsZWFuREYpDQoNCmNudE91dGMgPC0gdGFibGUoY2xlYW5ERiRPdXRjb21lKQ0KcHJvcE91dGMgPC0gcm91bmQocHJvcC50YWJsZShjbnRPdXRjKSAqIDEwMCAsIGRpZ2l0cyA9IDEpDQoNCmNudE91dGMNCnByb3BPdXRjDQoNCm1namgNCmNsZWFuREYkT3V0Y29tZSA8LSBmYWN0b3IoY2xlYW5ERiRPdXRjb21lLCBsZXZlbHMgPSBjKCIwIiwgIjEiKSwgbGFiZWxzID0gYygiTm8gRGlhYmV0ZXMiLCAiRGlhYmV0ZXMiKSkgJT4lIHJlbGV2ZWwoIkRpYWJldGVzIikgDQpoZWFkKGNsZWFuREYsIDEwKQ0KDQpzdW1tYXJ5KGNsZWFuREZbYygiR2x1Y29zZSIsICJQcmVnbmFuY2llcyIsICJCTUkiLCAiQmxvb2RQcmVzc3VyZSIsICJEaWFiZXRlc1BlZGlncmVlRnVuY3Rpb24iKV0pDQoNCm5vcm1hbGl6ZSA8LSBmdW5jdGlvbih4KSB7DQogIHJldHVybiAoKHggLSBtaW4oeCkpIC8gKG1heCh4KSAtIG1pbih4KSkpDQp9DQoNCg0KY2xlYW5ERl9uIDwtIHNhcHBseSgxOjgsDQogICAgICAgICAgICAgICAgICAgIGZ1bmN0aW9uKHgpIHsNCiAgbm9ybWFsaXplKGNsZWFuREZbLHhdKQ0KfSkgJT4lIGFzLmRhdGEuZnJhbWUoKQ0KY29sbmFtZXMoY2xlYW5ERl9uKSA8LSBjb2xuYW1lcyhjbGVhbkRGKVsxOjhdDQoNCnN1bW1hcnkoY2xlYW5ERl9uW2MoIkdsdWNvc2UiLCAiUHJlZ25hbmNpZXMiLCAiQk1JIiwgIkJsb29kUHJlc3N1cmUiLCAiRGlhYmV0ZXNQZWRpZ3JlZUZ1bmN0aW9uIildKQ0KDQp0cmFpbkRGX2ZlYXQgPC0gY2xlYW5ERl9uWzE6NjY4LCAgXQ0KdGVzdERGX2ZlYXQgPC0gY2xlYW5ERl9uWzY2OTo3NjgsICBdDQoNCnRyYWluREZfbGFiZWxzIDwtIGNsZWFuREZbMTo2NjgsICAxXQ0KdGVzdERGX2xhYmVscyA8LSBjbGVhbkRGWzY2OTo3NjgsICAxXQ0KDQojIyBNb2RlbGluZw0KY2xlYW5ERl90ZXN0X3ByZWQgPC0ga25uKHRyYWluID0gYXMubWF0cml4KHRyYWluREZfZmVhdCksIHRlc3QgPSBhcy5tYXRyaXgodGVzdERGX2ZlYXQpLCBjbCA9IGFzLm1hdHJpeCh0cmFpbkRGX2xhYmVscyksIGs9NTApDQpoZWFkKGNsZWFuREZfdGVzdF9wcmVkKQ0KDQpjb25mdXNpb25NYXRyaXgoY2xlYW5ERl90ZXN0X3ByZWQsIHRlc3RERl9sYWJlbHNbWzFdXSwgcG9zaXRpdmUgPSBOVUxMLCBkbm4gPSBjKCJQcmVkaWN0aW9uIiwgIlRydWUiKSkNCg0KIyMgRXZhbHVhdGlvbiBhbmQgRGVwbG95bWVudA0KDQoNCnJldmlld2VyIGFkZHMgc3VnZ2VzdGlvbnMgZm9yIGltcHJvdmluZyB0aGUgbW9kZWwNCg==</div>
 
 
 
@@ -1857,7 +1861,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("assignment-knn-diy.qmd");
+  window.initializeSourceEmbed("assignment-knn-diy.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
