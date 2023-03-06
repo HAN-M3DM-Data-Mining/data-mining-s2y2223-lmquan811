@@ -23,8 +23,8 @@ library(e1071)
 This KNN model is launched to detect the possibility of getting diabetes among a specific amount of people to preventing it 
 
 ## Data Understanding
-url <- "https://raw.githubusercontent.com/HAN-M3DM-Data-Mining/data-mining-s2y2223-lmquan811/master/datasets/KNN-diabetes.csv?token=GHSAT0AAAAAAB6DEE6L5UG6ULBZVOGTYY3OZAFCVSA"
-rawDF <- read_csv(url)    
+  Accessing to the data 
+rawDF <- read_csv("data-mining-s2y2223-lmquan811/datasets/KNN-diabetes.csv")    
 
 str(rawDF)
 
@@ -44,8 +44,8 @@ head(cleanDF, 10)
 
 summary(cleanDF[c("Glucose", "Pregnancies", "BMI", "BloodPressure", "DiabetesPedigreeFunction")])
 
-normalize <- function(x) { # Function takes in a vector
-  return ((x - min(x)) / (max(x) - min(x))) # distance of item value - minimum vector value divided by the range of all vector values
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
 }
 
 
