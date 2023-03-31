@@ -1,5 +1,5 @@
 ---
-title: "Assigment - Naive Bayes DIY"
+title: "Assigment - KNN DIY"
 author:
 - Le Minh Quan - Author
 - Maximilian - Reviewer
@@ -8,11 +8,7 @@ output:
   html_notebook:
   toc: true
   toc_depth: 2
-editor_options: 
-  markdown: 
-    wrap: 72
 ---
-
 
 ```{r}
 library(readr)
@@ -37,16 +33,22 @@ Accessing to the data
 rawDF <- read_csv("./datasets/KNN-diabetes.csv")
 ```
 
+The str() function will return the selected object to a string format.
+
 ```{r}
 str(rawDF)
 ```
 
 ## Data Preparation
 
+The Data consist all of the important factor, thereby we won't deleting anything (but will select them later)
+
 ```{r}
 cleanDF <- rawDF 
 head(cleanDF)
 ```
+
+We counting the outcomes to see how many patients with Diabetes or with No Diabetes and the percentage
 
 ```{r}
 cntOutc <- table(cleanDF$Outcome) 
@@ -55,6 +57,8 @@ propOutc <- round(prop.table(cntOutc) * 100 , digits = 1)
 cntOutc 
 propOutc
 ```
+
+
 
 ```{r}
 cleanDF$Outcome <- factor(cleanDF$Outcome, levels = c("0", "1"), labels = c("No Diabetes", "Diabetes")) %>% relevel("Diabetes") 
@@ -86,19 +90,19 @@ train_feat <- train[-9]
 
 test_labels <- test[, 9]
 train_labels <- train[,9]
-
 ```
 
-
-
-
 ## Modeling
-
-cleanDF_test_pred <- knn(train = as.matrix(trainDF_feat), test = as.matrix(testDF_feat), cl = as.matrix(trainDF_labels), k=10)
+```{r}
+library(class)
+cleanDF_test_pred <- knn(train = as.matrix(train_feat), test = as.matrix(test_feat), cl = as.matrix(train_labels), k=10)
 head(cleanDF_test_pred)
+```
 
-confusionMatrix(cleanDF_test_pred, testDF_labels[[1]], positive = NULL,
+```{r}
+confusionMatrix(cleanDF_test_pred, test_labels[[1]], positive = NULL,
 dnn = c("Prediction", "True"))
+```
 
 ## Evaluation and Deployment
 
