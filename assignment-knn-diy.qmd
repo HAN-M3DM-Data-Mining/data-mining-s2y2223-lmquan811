@@ -126,10 +126,19 @@ dnn = c("Prediction", "True"))
 ```
 
 ## Evaluation and Deployment
-  How would you assess the overall performance of the model?
-  
-  Answer:
-  
-  What would you consider as more costly: high false negatives or high false positives levels? Why?
-  
-  Answer
+
+Overall: 
+  - The accuracy percentage is 75.65%. 
+  - 19.13% of test feature has True Positive and 56.52% is True Negative. 
+  - 3.04% is False Positive and 21.3% is False Negative.
+
+Of the 230 cases, 93 are positive (44 TPs and 49 FNs) and 137 are negative (7 FPs and 130 TNs).
+
+Of 137 negative diabetes, 94.89% are correctly predicted. This is a good result. 
+
+However, of 93 positive cases, only 47.31% are correctly identified. More than 50% of the cases go wrong which is a bad outcome.
+
+Precision in this model is 86.27% which tells us that there is a 86.27% correct if it predicts someone is positive, and the Recall in this model is 47.31%. 
+
+Therefore, the Precision is good but it still have room to improve and the Recall is quite high
+which is not so good.
