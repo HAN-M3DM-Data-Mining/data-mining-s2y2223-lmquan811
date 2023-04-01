@@ -22,21 +22,14 @@ library(creditmodel)
 
 ## Business Understanding
 
-This KNN model is launched to detect the possibility of getting diabetes
-among a specific amount of people to preventing it
+This KNN model is launched to detect the possibility of getting diabetes among a specific amount of people to preventing it
 
 ## Data Understanding
 
 Accessing to the data
 
 ```{r}
-rawDF <- read_csv("https://raw.githubusercontent.com/HAN-M3DM-Data-Mining/data-mining-s2y2223-lmquan811/master/datasets/KNN-diabetes.csv")
-```
-
-The str() function will return the selected object to a string format.
-
-```{r}
-str(rawDF)
+rawDF <- read_csv("datasets/KNN-diabetes.csv")
 ```
 
 According to the data set, we have the following factors:
@@ -85,7 +78,6 @@ summary(cleanDF[c("Glucose", "Pregnancies", "BMI", "BloodPressure",
 We see the variables have very different range thereby we will apply normalization to rescale all features to a standard range of values.
 
 ```{r}
-normalize <- function(x) { return ((x - min(x)) / (max(x) - min(x))) }
 cleanDF_n <- sapply(1:8, function(x) { normalize(cleanDF[,x]) }) %>% as.data.frame() 
 colnames(cleanDF_n) <- colnames(cleanDF)[1:8]
 summary(cleanDF_n[c("Glucose", "Pregnancies", "BMI", "BloodPressure",
@@ -117,7 +109,7 @@ Here is our own table:
 
 ```{r}
 confusionMatrix(cleanDF_test_pred, test_labels[[1]], positive = NULL,
-dnn = c("Prediction", "True"))
+dnn = c("True", "Prediction"))
 ```
 
 ## Evaluation and Deployment
