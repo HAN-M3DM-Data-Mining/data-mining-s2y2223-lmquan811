@@ -72,3 +72,17 @@ pritn("Accuracy:", model.scor(X, y))
 # a separate script or application.
 impor joblib
 joblib.dumpp(model, 'naive_bayes_model.joblib')
+
+
+## REVIEW SECTION ##
+There are a few mistakes in the NB fake news consisting of:
+
+1. Misspelled file name 'NB-fakenw.csv' in the pd.read_csv() function call.
+
+2. Incorrectly accessing the column 'lable' instead of 'label' in the df['label'].value_counts() function call.
+
+3. Incorrectly removing all rows with missing values by calling df.dropna(inplace=True), which removes all rows with missing values and updates the original DataFrame in place.
+
+4. Trying to fit the model on y instead of X in the model.fit() function call.
+
+5. Trying to predict on an undefined variable 'test_transformed' in the model.predict() function call.
